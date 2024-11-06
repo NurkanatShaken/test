@@ -1,0 +1,6 @@
+- hosts: all
+  become: true
+  roles:
+    - postgresql
+    - semaphore
+#    - load_balancer

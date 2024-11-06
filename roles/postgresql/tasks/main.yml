@@ -1,0 +1,65 @@
+    - name: Install dependencies for PostgreSQL
+      ansible.builtin.package:
+        name: 
+          - python3-psycopg2
+          - libpq-dev
+        state: present
+        update_cache: yes
+
+    - name: Install PostgreSQL
+      ansible.builtin.package:
+        name: postgresql
+        state: present
+        update_cache: yes
+
+    - name: Start and enable PostgreSQL service
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Set password for 'postgres' user
+      ansible.builtin.shell: |
+        psql -c "ALTER USER postgres WITH PASSWORD '{{ postgresql_password }}';"
+      become: true
+      become_user: postgres
+      environment:
+        PGPASSWORD: "{{ postgresql_password }}"
+
+
+    - name: Change peer to md5 authentication for postgres user in pg_hba.conf
+      ansible.builtin.lineinfile:
+        path: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+        regexp: '^local\s+all\s+postgres\s+peer'
+        line: 'local   all             postgres                                md5'
+        backrefs: yes
+
+    - name: Restart PostgreSQL service to apply changes
+      ansible.builtin.service:
+        name: postgresql
+        state: restarted
+
+    - name: Create Semaphore database user
+      ansible.builtin.postgresql_user:
+        name: "semaphore"
+        password: "password"
+        state: present
+        login_user: postgres
+        login_password: "{{ postgresql_password }}"
+
+    - name: Create Semaphore database
+      ansible.builtin.postgresql_db:
+        name: semaphore
+        owner: semaphore
+        state: present
+        login_user: postgres
+        login_password: "{{ postgresql_password }}"
+
+    - name: Grant all privileges on Semaphore database to semaphore user
+      ansible.builtin.postgresql_privs:
+        db: semaphore
+        type: database
+        privs: ALL
+        roles: semaphore
+        login_user: postgres
+        login_password: "{{ postgresql_password }}"

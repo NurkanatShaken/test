@@ -1,0 +1,7 @@
+---
+# vars file for roles/postgresql
+
+postgresql_user: semaphore
+postgresql_password: "password"
+postgresql_db: semaphore
+postgresql_version: "16"

@@ -1,0 +1,13 @@
+---
+# vars file for roles/semaphore
+semaphore_version: "latest"
+admin_user: "admin"
+admin_pass: "password"
+admin_email: "admin@example.com"
+db_user: "semaphore"
+db_password: "password"
+db_name: "semaphore"
+db_host: "localhost"
+cookie_hash: "+r9Z0THlc7rW6FCHy9L84VtBI50tOQ=="
+cookie_encryption: "FywHa7Hiz2csWXr6SscMo6MLvM5Oeg=="
+access_key_encryption: "EUMvu9q7rixyTtLpiRX6eQirUSSsOw=="
